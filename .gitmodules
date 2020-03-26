@@ -1,0 +1,3 @@
+[submodule "3rdparty/compiler-rt"]
+	path = 3rdparty/compiler-rt
+	url = http://llvm.org/git/compiler-rt
