@@ -13,7 +13,7 @@ objs.ld  := $(filter %.ld,$(objs))
 deps     := $(objs.o:.o=.d) $(objs.ld:.ld=.d)
 
 ifdef crt-y
-crt-src  := $(top)/3rdparty/compiler-rt/lib/builtins
+crt-src  := $(top)/3rdparty/llvm-project/compiler-rt/lib/builtins
 crt-obj  := $(build)/compiler-rt
 
 crt-objs := $(addprefix $(crt-obj)/,$(crt-y))
