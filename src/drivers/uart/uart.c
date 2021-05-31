@@ -45,23 +45,26 @@ static volatile unsigned int tx_consume;
 void uart_isr(void)
 {
 	struct uart_regs *regs = uart_baseptr();
-	uint32_t pending;
+	uint32_t pending, enable;
 	uint32_t rx_produce_next;
 
 	pending = read32(&regs->ev_pending);
+	enable  = read32(&regs->ev_enable);
 
-	if (pending & EV_RX_RDY) {
+	if (pending & enable & EV_RX_RDY) {
 		while (read32(&regs->rx_rdy)) {
 			rx_produce_next = (rx_produce + 1) & RX_RINGBUF_MASK;
 			if (rx_produce_next != rx_consume) {
 				rx_buf[rx_produce] = read32(&regs->rx_data);
 				rx_produce = rx_produce_next;
+			} else {
+				write32(&regs->ev_enable, enable & ~EV_RX_RDY);
+				break;
 			}
 		}
-		write32(&regs->ev_pending, EV_RX_RDY);
 	}
 
-	if (pending & EV_TX_MTY) {
+	if (pending & enable & EV_TX_MTY) {
 		write32(&regs->ev_pending, EV_TX_MTY);
 		while ((tx_consume != tx_produce) && read32(&regs->tx_rdy)) {
 			write32(&regs->tx_data, tx_buf[tx_consume]);
@@ -73,9 +76,11 @@ void uart_isr(void)
 /* Do not use in interrupt handlers! */
 char uart_read(void)
 {
+	struct uart_regs *regs = uart_baseptr();
 	char c;
+	uint32_t ie = irq_getie();
 
-	if (irq_getie()) {
+	if (ie) {
 		while (rx_consume == rx_produce);
 	} else if (rx_consume == rx_produce) {
 		return 0;
@@ -83,6 +88,16 @@ char uart_read(void)
 
 	c = rx_buf[rx_consume];
 	rx_consume = (rx_consume + 1) & RX_RINGBUF_MASK;
+
+	if (ie) {
+		if (rx_consume == rx_produce) {
+			uint32_t enable = read32(&regs->ev_enable);
+			if ((enable & EV_RX_RDY) == 0) {
+				write32(&regs->ev_enable, enable | EV_RX_RDY);
+			}
+		}
+	}
+
 	return c;
 }
 
