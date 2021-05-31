@@ -2,6 +2,12 @@
 	.global boot_helper
 boot_helper:
 	// flush instruction cache
-	/* fence.i */ // FIXME
+	fence.i
+	nop // FIXME
+	nop
+	nop
+	nop
+	nop
+	nop
 	// jump to payload
 	jr a3

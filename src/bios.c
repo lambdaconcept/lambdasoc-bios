@@ -294,10 +294,17 @@ int main(void)
 	uart_init();
 
 	puts("\nLambdaSoC BIOS\n"
+	     "(c) Copyright 2012-2021 Enjoy-Digital\n"
 	     "(c) Copyright 2007-2020 M-Labs Limited\n"
-	     "(c) Copyright 2020 LambdaConcept\n"
+	     "(c) Copyright 2021 LambdaConcept\n"
 	     "Built "__DATE__" "__TIME__"\n");
 	crcbios();
+
+#if CONFIG_WITH_SDRAM
+	if (!sdram_init()) {
+		printf("Memory initialization failed\n");
+	}
+#endif
 
 	while (1) {
 		putsnonl("\e[1mBIOS>\e[0m ");

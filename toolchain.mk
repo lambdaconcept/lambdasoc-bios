@@ -12,6 +12,9 @@ objs.o   := $(filter %.o,$(objs))
 objs.ld  := $(filter %.ld,$(objs))
 deps     := $(objs.o:.o=.d) $(objs.ld:.ld=.d)
 
+
+# Compiler-RT
+
 ifdef crt-y
 crt-src  := $(top)/3rdparty/llvm-project/compiler-rt/lib/builtins
 crt-obj  := $(build)/compiler-rt
@@ -45,6 +48,65 @@ $(build)/libcompiler-rt.a: $(crt-objs)
 
 $(build)/bios.elf: $(build)/libcompiler-rt.a
 endif
+
+
+# LiteX libraries
+
+LITEX_SW_DIR  := $(top)/3rdparty/litex/litex/soc/software
+LITEX_INC_DIR := $(top)/3rdparty/litex/litex/soc/software/include
+LITEX_CPU_DIR := $(top)/3rdparty/litex/litex/soc/cores/cpu/minerva # FIXME
+LITEX_GEN_DIR := $(top)/src/drivers/sdram/include # FIXME move elsewhere
+
+ifdef libbase-y
+libbase-src  := $(top)/3rdparty/litex/litex/soc/software/libbase
+libbase-obj  := $(build)/litex/libbase
+libbase-objs := $(addprefix $(libbase-obj)/,$(libbase-y))
+
+$(foreach obj,$(libbase-objs), \
+	$(eval dirs += $(dir $(obj))))
+
+LDFLAGS += -L$(build)/litex
+LDLIBS  += -lbase
+
+# FIXME: -D__minerva__
+CPPFLAGS_libbase := -nostdinc -I$(LITEX_INC_DIR)/base -I$(LITEX_CPU_DIR) -I$(LITEX_GEN_DIR) -D__minerva__
+
+$(libbase-obj)/%.o: CPPFLAGS = $(CPPFLAGS_libbase)
+
+$(libbase-obj)/%.o: $(libbase-src)/%.c
+	$(COMPILE.c) -o $@ $<
+
+$(build)/litex/libbase.a: $(libbase-objs)
+	$(AR) crs $@ $^
+
+$(build)/bios.elf: $(build)/litex/libbase.a
+endif
+
+ifdef liblitedram-y
+liblitedram-src  := $(top)/3rdparty/litex/litex/soc/software/liblitedram
+liblitedram-obj  := $(build)/litex/liblitedram
+liblitedram-objs := $(addprefix $(liblitedram-obj)/,$(liblitedram-y))
+
+$(foreach obj,$(liblitedram-objs), \
+	$(eval dirs += $(dir $(obj))))
+
+LDFLAGS += -L$(build)/litex
+LDLIBS  += -llitedram
+
+# FIXME: -D__minerva__
+CPPFLAGS_liblitedram := -nostdinc -I$(LITEX_SW_DIR) -I$(LITEX_INC_DIR)/base -I$(LITEX_CPU_DIR) -I$(LITEX_GEN_DIR) -D__minerva__
+
+$(liblitedram-obj)/%.o: CPPFLAGS = $(CPPFLAGS_liblitedram)
+
+$(liblitedram-obj)/%.o: $(liblitedram-src)/%.c
+	$(COMPILE.c) -o $@ $<
+
+$(build)/litex/liblitedram.a: $(liblitedram-objs) $(libbase-objs) $(crt-objs)
+	$(AR) crs $@ $^
+
+$(build)/bios.elf: $(build)/litex/liblitedram.a
+endif
+
 
 -include deps
 

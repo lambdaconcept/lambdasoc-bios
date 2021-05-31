@@ -1,3 +1,6 @@
 [submodule "3rdparty/llvm-project"]
 	path = 3rdparty/llvm-project
 	url = https://github.com/llvm/llvm-project
+[submodule "3rdparty/litex"]
+	path = 3rdparty/litex
+	url = git@github.com:enjoy-digital/litex.git

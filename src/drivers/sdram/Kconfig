@@ -1,0 +1,6 @@
+menu "SDRAM"
+
+config WITH_SDRAM
+	bool "Enable SDRAM support"
+
+endmenu
