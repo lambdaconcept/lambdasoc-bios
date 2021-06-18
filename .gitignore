@@ -5,3 +5,5 @@ build/
 *.d
 *.elf
 *.bin
+3rdparty
+*.tar.gz
