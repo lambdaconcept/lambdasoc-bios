@@ -34,6 +34,13 @@ endif
 
 $(crt-obj)/%.o: CPPFLAGS = $(CPPFLAGS_crt)
 
+main.tar.gz:
+	wget https://github.com/llvm/llvm-project/archive/main.tar.gz
+
+$(crt-src)/%.c: main.tar.gz
+	mkdir -p $(top)/3rdparty/llvm-project
+	tar xf main.tar.gz --strip-components=1 -C $(top)/3rdparty/llvm-project
+
 $(crt-obj)/%.o: $(crt-src)/%.c
 	$(COMPILE.c) -o $@ $<
 
