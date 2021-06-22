@@ -25,7 +25,8 @@ reset_vector:
 1:	j 1b
 
 trap_vector:
-	addi sp, sp, -16*4
+	addi sp, sp, -18*4
+
 	sw ra,  0*4(sp)
 	sw t0,  1*4(sp)
 	sw t1,  2*4(sp)
@@ -42,9 +43,17 @@ trap_vector:
 	sw t4, 13*4(sp)
 	sw t5, 14*4(sp)
 	sw t6, 15*4(sp)
-	call isr
+
+	csrr t0, mepc
+	sw t0, 16*4(sp)
+
+	csrr t0, mcause
+	sw t0, 17*4(sp)
+
+	mv a0, sp
+	call trap_handler
+
 	lw ra,  0*4(sp)
-	lw t0,  1*4(sp)
 	lw t1,  2*4(sp)
 	lw t2,  3*4(sp)
 	lw a0,  4*4(sp)
@@ -59,5 +68,14 @@ trap_vector:
 	lw t4, 13*4(sp)
 	lw t5, 14*4(sp)
 	lw t6, 15*4(sp)
-	addi sp, sp, 16*4
+
+	lw t0, 16*4(sp)
+	csrw mepc, t0
+
+	lw t0, 17*4(sp)
+	csrw mcause, t0
+
+	lw t0, 1*4(sp)
+
+	addi sp, sp, 18*4
 	mret

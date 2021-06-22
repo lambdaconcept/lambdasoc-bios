@@ -20,4 +20,4 @@ crt-$(CONFIG_RISCV_MULDIV_SOFT) += clzsi2.o
 
 obj-y += boot.o
 obj-y += entry.o
-obj-y += isr.o
+obj-y += trap_handler.o
