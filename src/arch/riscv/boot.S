@@ -8,6 +8,7 @@ boot_helper:
 	csrc mie, t0
 
 	// flush instruction cache
-	/* fence.i */ // FIXME
+	fence.i
+
 	// jump to payload
 	jr a3
