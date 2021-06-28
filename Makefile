@@ -1,7 +1,7 @@
 top := $(CURDIR)
 src := $(top)/src
 build ?= build
-obj := $(build)/obj
+obj := $(build)/bios
 
 kconfig-src := $(top)/util/kconfig
 kconfig-obj := $(build)/util/kconfig
@@ -25,7 +25,7 @@ BIOS_EXPORTS += KCONFIG_NEGATIVES KCONFIG_STRICT
 
 export $(BIOS_EXPORTS)
 
-all: $(KCONFIG_AUTOHEADER) $(build)/bios.bin
+all: $(KCONFIG_AUTOHEADER) $(obj)/bios.bin
 
 include $(kconfig-src)/build.mk
 

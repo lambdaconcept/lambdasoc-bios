@@ -13,37 +13,14 @@ objs.ld  := $(filter %.ld,$(objs))
 deps     := $(objs.o:.o=.d) $(objs.ld:.ld=.d)
 
 ifdef crt-y
-crt-src  := $(top)/3rdparty/llvm-project/compiler-rt/lib/builtins
-crt-obj  := $(build)/compiler-rt
-
-crt-objs := $(addprefix $(crt-obj)/,$(crt-y))
-
-$(foreach obj,$(crt-objs), \
-	$(eval dirs += $(dir $(obj))))
-
-LDFLAGS  += -L$(build)
-LDLIBS   += -lcompiler-rt
-deps     += $(crt-objs:.o=.d)
-
-CPPFLAGS_crt := -I$(src)/include -I$(crt-src) -D'mode(x)='
-ifeq ($(CONFIG_CPU_BYTEORDER), "little")
-CPPFLAGS_crt += -D_YUGA_LITTLE_ENDIAN=1
-else
-CPPFLAGS_crt += -D_YUGA_BIG_ENDIAN=1
+include compiler_rt.mk
 endif
 
-$(crt-obj)/%.o: CPPFLAGS = $(CPPFLAGS_crt)
+liblitex-y := $(libbase-y)
+liblitex-y += $(liblitedram-y)
 
-$(crt-obj)/%.o: $(crt-src)/%.c
-	$(COMPILE.c) -o $@ $<
-
-$(crt-obj)/%.o: $(crt-src)/%.S
-	$(COMPILE.S) -o $@ $<
-
-$(build)/libcompiler-rt.a: $(crt-objs)
-	$(AR) crs $@ $^
-
-$(build)/bios.elf: $(build)/libcompiler-rt.a
+ifdef liblitex-y
+include litex.mk
 endif
 
 -include deps
@@ -57,9 +34,9 @@ $(obj)/%.o: $(src)/%.c
 $(obj)/%.o: $(src)/%.S
 	$(COMPILE.S) -o $@ $<
 
-$(build)/bios.elf: $(objs)
+$(obj)/bios.elf: $(objs)
 	$(LINK.o) -o $@ $(objs.o) $(LDLIBS)
 
-$(build)/bios.bin: $(build)/bios.elf
+$(obj)/bios.bin: $(obj)/bios.elf
 	$(OBJCOPY) -O binary $< $@
 	$(MSCIMG) $@

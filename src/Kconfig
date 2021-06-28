@@ -24,6 +24,16 @@ config UART_START
 config TIMER_START
 	hex "Timer start address"
 
+if WITH_SDRAM
+
+config SDRAM_START
+	hex "SDRAM start address"
+
+config SDRAM_SIZE
+	hex "SDRAM size"
+
+endif # WITH_SDRAM
+
 endmenu
 
 menu "Interrupt configuration"
