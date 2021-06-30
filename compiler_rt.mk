@@ -1,4 +1,4 @@
-crt-src  := $(top)/3rdparty/llvm-project/compiler-rt/lib/builtins
+crt-src  := $(top)/3rdparty/compiler-rt/lib/builtins
 crt-obj  := $(obj)/3rdparty/compiler-rt
 crt-objs := $(addprefix $(crt-obj)/,$(crt-y))
 
