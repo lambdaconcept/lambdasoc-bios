@@ -50,6 +50,16 @@ config SRAM_LIMIT
 
 endif # SOC_WITH_SRAM
 
+if SOC_WITH_ETHMAC
+
+config ETHMAC_BASE
+	hex "Ethernet MAC base address"
+
+config ETHMAC_LIMIT
+	hex "Ethernet MAC limit address"
+
+endif # SOC_WITH_ETHMAC
+
 endmenu
 
 menu "SoC"
@@ -66,5 +76,8 @@ config SOC_WITH_SDRAM
 
 config SOC_WITH_SRAM
 	bool "Enable SRAM support"
+
+config SOC_WITH_ETHMAC
+	bool "Enable Ethernet MAC support"
 
 endmenu

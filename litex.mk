@@ -10,6 +10,7 @@ LITEX_INC_DIR := $(top)/3rdparty/litex/litex/soc/software/include
 
 LIBBASE_GENERATED     := $(top)/src/litex/base/include
 LIBLITEDRAM_GENERATED := $(top)/src/litex/litedram/include
+LIBLITEETH_GENERATED  := $(top)/src/litex/liteeth/include
 
 CPPFLAGS_litex += \
 	-nostdinc \
@@ -52,6 +53,19 @@ $(liblitedram-obj)/%.o: $(liblitedram-src)/%.c
 	$(COMPILE.c) -o $@ $<
 endif
 
+ifdef libliteeth-y
+CPPFLAGS_libliteeth = \
+	-I$(LIBLITEETH_GENERATED) \
+	-I$(liteeth_dir) \
+
+libliteeth-src := $(LITEX_SW_DIR)/libliteeth
+libliteeth-obj := $(litex-obj)/libliteeth
+liblitex-objs  += $(addprefix $(libliteeth-obj)/,$(libliteeth-y))
+
+$(libliteeth-obj)/%.o: CPPFLAGS = $(CPPFLAGS_litex) $(CPPFLAGS_libliteeth)
+$(libliteeth-obj)/%.o: $(libliteeth-src)/%.c
+	$(COMPILE.c) -o $@ $<
+endif
 
 $(foreach obj,$(liblitex-objs), \
 	$(eval dirs += $(dir $(obj))))

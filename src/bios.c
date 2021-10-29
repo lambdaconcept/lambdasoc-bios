@@ -14,6 +14,75 @@
 # include <litex/sdram.h>
 #endif
 
+#if CONFIG_SOC_WITH_ETHMAC
+# include <litex/mdio.h>
+# include <litex/udp.h>
+# include <boot/net.h>
+
+static void mdiow(char *c_phyadr, char *c_reg, char *c_val)
+{
+	char *c;
+	unsigned int phyadr = strtoul(c_phyadr, &c, 0);
+	if (*c != 0) {
+		printf("incorrect address\n");
+		return;
+	}
+	unsigned int reg = strtoul(c_reg, &c, 0);
+	if (*c != 0) {
+		printf("incorrect register\n");
+		return;
+	}
+	unsigned int val = strtoul(c_val, &c, 0);
+	if (*c != 0) {
+		printf("incorrect value\n");
+		return;
+	}
+
+	printf("MDIO write @ 0x%04x: 0x%02x 0x%04x\n", phyadr, reg, val);
+	mdio_write(phyadr, reg, val);
+}
+
+static void mdior(char *c_phyadr, char *c_reg)
+{
+	char *c;
+	unsigned int phyadr = strtoul(c_phyadr, &c, 0);
+	if (*c != 0) {
+		printf("incorrect address\n");
+		return;
+	}
+	unsigned int reg = strtoul(c_reg, &c, 0);
+	if (*c != 0) {
+		printf("incorrect register\n");
+		return;
+	}
+
+	printf("MDIO read @ 0x%04x:\n", phyadr);
+	unsigned int val = mdio_read(phyadr, reg);
+	printf("0x%02x 0x%04x\n", reg, val);
+}
+
+static void mdiod(char *c_phyadr, char *c_count)
+{
+	char *c;
+	unsigned int phyadr = strtoul(c_phyadr, &c, 0);
+	if (*c != 0) {
+		printf("incorrect address\n");
+		return;
+	}
+	unsigned int count = strtoul(c_count, &c, 0);
+	if (*c != 0) {
+		printf("incorrect count\n");
+		return;
+	}
+
+	printf("MDIO dump @ 0x%04x:\n", phyadr);
+	for (int i = 0; i < count; i++) {
+		unsigned int val = mdio_read(phyadr, i);
+		printf("0x%02x 0x%04x\n", i, val);
+	}
+}
+#endif
+
 /* General address space functions */
 
 #define NUMBER_OF_BYTES_ON_A_LINE 16
@@ -184,8 +253,16 @@ static void help(void)
 	puts("mr         - read address space");
 	puts("mw         - write address space");
 	puts("mc         - copy address space");
+#if CONFIG_SOC_WITH_ETHMAC
+	puts("mdiow      - write MDIO register");
+	puts("mdior      - read MDIO register");
+	puts("mdiod      - dump MDIO registers");
+#endif
 	puts("crc        - compute CRC32 of a part of the address space");
 	puts("serialboot - boot via SFL");
+#if CONFIG_SOC_WITH_ETHMAC
+	puts("tftpboot    - boot via TFTP");
+#endif
 }
 
 static char *get_token(char **str)
@@ -218,13 +295,25 @@ static void do_command(char *c)
             mc(get_token(&c), get_token(&c), get_token(&c));
         else if (strcmp(token, "crc") == 0)
             crc(get_token(&c), get_token(&c));
+#if CONFIG_SOC_WITH_ETHMAC
+        else if (strcmp(token, "mdiow") == 0)
+            mdiow(get_token(&c), get_token(&c), get_token(&c));
+        else if (strcmp(token, "mdior") == 0)
+            mdior(get_token(&c), get_token(&c));
+        else if (strcmp(token, "mdiod") == 0)
+            mdiod(get_token(&c), get_token(&c));
+#endif
 	else if (strcmp(token, "serialboot") == 0)
 		serialboot();
+#if CONFIG_SOC_WITH_ETHMAC
+	else if (strcmp(token, "tftpboot") == 0)
+		tftpboot("boot.bin"); // FIXME filename
+#endif
 	else if (strcmp(token, "") != 0)
 		puts("Command not found");
 }
 
-extern unsigned int _ftext, _erodata;
+extern unsigned int _ftext, _edata_bootrom;
 
 static void crcbios(void)
 {
@@ -233,20 +322,22 @@ static void crcbios(void)
 	unsigned int expected_crc;
 	unsigned int actual_crc;
 
+	printf("BIOS CRC check... ");
+
 	/*
-	 * _erodata is located right after the end of the flat
+	 * _edata_bootrom is located right after the end of the flat
 	 * binary image. The CRC tool writes the 32-bit CRC here.
-	 * We also use the address of _erodata to know the length
+	 * We also use the address of _edata_bootrom to know the length
 	 * of our code.
 	 */
 	offset_bios = (unsigned int)&_ftext;
-	expected_crc = _erodata;
-	length = (unsigned int)&_erodata - offset_bios;
+	expected_crc = _edata_bootrom;
+	length = (unsigned int)&_edata_bootrom - offset_bios;
 	actual_crc = crc32((unsigned char *)offset_bios, length);
 	if(expected_crc == actual_crc)
-		printf("BIOS CRC passed (%08x)\n", actual_crc);
+		printf("passed (%08x)\n", actual_crc);
 	else {
-		printf("BIOS CRC failed (expected %08x, got %08x)\n", expected_crc, actual_crc);
+		printf("failed (expected %08x, got %08x)\n", expected_crc, actual_crc);
 		printf("The system will continue, but expect problems.\n");
 	}
 }
@@ -300,6 +391,9 @@ int main(void)
 	     "Built "__DATE__" "__TIME__"\n");
 	crcbios();
 
+#if CONFIG_SOC_WITH_ETHMAC
+	eth_init();
+#endif
 #if CONFIG_SOC_WITH_SDRAM
 	if (!sdram_init()) {
 		printf("Memory initialization failed\n");

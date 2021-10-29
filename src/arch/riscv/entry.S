@@ -9,6 +9,18 @@ reset_vector:
 	la t0, trap_vector
 	csrw mtvec, t0
 
+	// initialize .data
+	la t0, _fdata
+	la t1, _edata
+	la t2, _fdata_bootrom
+1:	beq t0, t1, 2f
+	lw t3, 0(t2)
+	sw t3, 0(t0)
+	addi t0, t0, 4
+	addi t2, t2, 4
+	j 1b
+2:
+
 	// initialize .bss
 	la t0, _fbss
 	la t1, _ebss

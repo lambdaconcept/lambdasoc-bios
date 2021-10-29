@@ -23,6 +23,8 @@ SECTIONS
 		_frodata = .;
 		*(.rodata .rodata.* .gnu.linkonce.r.*)
 		*(.rodata1)
+		*(.got .got.*)
+		*(.toc .toc.*)
 
 		/* Make sure the file is aligned on disk as well
 		   as in memory; CRC calculation requires that. */
@@ -30,6 +32,21 @@ SECTIONS
 		. = ALIGN(8);
 		_erodata = .;
 	} > bootrom
+
+	.data : ALIGN(8)
+	{
+		. = ALIGN(8);
+		_fdata = .;
+		*(.data .data.* .gnu.linkonce.d.*)
+		*(.data1)
+		*(.sdata .sdata.* .gnu.linkonce.s.*)
+
+		/* Make sure the file is aligned on disk as well
+		   as in memory; CRC calculation requires that. */
+		FILL(0);
+		. = ALIGN(8);
+		_edata = .;
+	} > scratchpad AT> bootrom
 
 	.bss :
 	{
@@ -54,3 +71,6 @@ SECTIONS
 }
 
 PROVIDE(_fstack = ORIGIN(scratchpad) + LENGTH(scratchpad) - 8);
+
+PROVIDE(_fdata_bootrom = LOADADDR(.data));
+PROVIDE(_edata_bootrom = LOADADDR(.data) + SIZEOF(.data));

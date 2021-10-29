@@ -1,0 +1,29 @@
+menu "Ethernet MAC"
+
+if SOC_WITH_ETHMAC
+
+config ETHMAC_CTRL_OFFSET
+	hex "CSR window offset"
+
+config ETHMAC_DATA_OFFSET
+	hex "Data window offset"
+
+config ETHMAC_RX_SLOTS
+	int "Number of RX slots"
+
+config ETHMAC_TX_SLOTS
+	int "Number of TX slots"
+
+config ETHMAC_SLOT_SIZE
+	int "Slot size (in bytes)"
+	default 2048
+
+config ETHMAC_LOCAL_IP
+	int "Local IPv4 address"
+
+config ETHMAC_REMOTE_IP
+	int "Remote IPv4 address"
+
+endif # SOC_WITH_ETHMAC
+
+endmenu

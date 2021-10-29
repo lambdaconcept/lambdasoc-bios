@@ -1,5 +1,6 @@
 menu "Drivers"
 
+source src/drivers/ethmac/Kconfig
 source src/drivers/intc/Kconfig
 source src/drivers/sdram/Kconfig
 source src/drivers/sram/Kconfig
