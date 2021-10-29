@@ -4,7 +4,7 @@ LDFLAGS  := -nostdlib -T$(obj)/link.ld
 
 PYTHON   := python3
 MSCIMG   := $(PYTHON) util/mkmscimg.py
-ifeq ($(CONFIG_CPU_BYTEORDER), "little")
+ifeq ($(CONFIG_CPU_BYTEORDER_LITTLE), y)
 MSCIMG   += --little
 endif
 

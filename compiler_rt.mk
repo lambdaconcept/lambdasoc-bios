@@ -3,7 +3,8 @@ crt-obj  := $(obj)/3rdparty/compiler-rt
 crt-objs := $(addprefix $(crt-obj)/,$(crt-y))
 
 CPPFLAGS_crt := -I$(src)/include -I$(crt-src) -D'mode(x)='
-ifeq ($(CONFIG_CPU_BYTEORDER), "little")
+
+ifeq ($(CONFIG_CPU_BYTEORDER_LITTLE), "y")
 CPPFLAGS_crt += -D_YUGA_LITTLE_ENDIAN=1
 else
 CPPFLAGS_crt += -D_YUGA_BIG_ENDIAN=1

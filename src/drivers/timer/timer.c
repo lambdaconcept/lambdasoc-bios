@@ -18,7 +18,7 @@ struct timer_regs {
 
 static inline void *timer_baseptr(void)
 {
-	uintptr_t timer_base = CONFIG_TIMER_START;
+	uintptr_t timer_base = CONFIG_TIMER_BASE;
 	return (void *)timer_base;
 }
 

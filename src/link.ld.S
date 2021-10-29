@@ -3,8 +3,8 @@
 
 MEMORY
 {
-	rom  (rx) : ORIGIN = CONFIG_ROM_START, LENGTH = CONFIG_ROM_SIZE
-	ram (rwx) : ORIGIN = CONFIG_RAM_START, LENGTH = CONFIG_RAM_SIZE
+	bootrom    (rx)  : ORIGIN = CONFIG_BOOTROM_BASE,    LENGTH = CONFIG_BOOTROM_SIZE
+	scratchpad (rwx) : ORIGIN = CONFIG_SCRATCHPAD_BASE, LENGTH = CONFIG_SCRATCHPAD_SIZE
 }
 
 SECTIONS
@@ -15,7 +15,7 @@ SECTIONS
 		*entry*.o(.text)
 		*(.text .stub .text.* .gnu.linkonce.t.*)
 		_etext = .;
-	} > rom
+	} > bootrom
 
 	.rodata :
 	{
@@ -29,7 +29,7 @@ SECTIONS
 		FILL(0);
 		. = ALIGN(8);
 		_erodata = .;
-	} > rom
+	} > bootrom
 
 	.bss :
 	{
@@ -44,16 +44,13 @@ SECTIONS
 		. = ALIGN(8);
 		_ebss = .;
 		_end = .;
-	} > ram
+	} > scratchpad
 
 	/DISCARD/ :
 	{
 		*(.eh_frame)
 		*(.comment)
-		*(.data .data.* .gnu.linkonce.d.*)
-		*(.data1)
-		*(.sdata .sdata.* .gnu.linkonce.s.*)
 	}
 }
 
-PROVIDE(_fstack = ORIGIN(ram) + LENGTH(ram) - 8);
+PROVIDE(_fstack = ORIGIN(scratchpad) + LENGTH(scratchpad) - 8);

@@ -1,7 +1,9 @@
 menu "Drivers"
 
-source src/drivers/uart/Kconfig
-source src/drivers/timer/Kconfig
+source src/drivers/intc/Kconfig
 source src/drivers/sdram/Kconfig
+source src/drivers/sram/Kconfig
+source src/drivers/timer/Kconfig
+source src/drivers/uart/Kconfig
 
 endmenu

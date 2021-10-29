@@ -5,9 +5,11 @@ else
 $(error Unsupported CPU)
 endif
 
-LITEX_SW_DIR   := $(top)/3rdparty/litex/litex/soc/software
-LITEX_INC_DIR  := $(top)/3rdparty/litex/litex/soc/software/include
-LITEX_GEN_DIR  := $(top)/src/drivers/sdram/include
+LITEX_SW_DIR  := $(top)/3rdparty/litex/litex/soc/software
+LITEX_INC_DIR := $(top)/3rdparty/litex/litex/soc/software/include
+
+LIBBASE_GENERATED     := $(top)/src/litex/base/include
+LIBLITEDRAM_GENERATED := $(top)/src/litex/litedram/include
 
 CPPFLAGS_litex += \
 	-nostdinc \
@@ -15,10 +17,7 @@ CPPFLAGS_litex += \
 	-I$(LITEX_SW_DIR) \
 	-I$(LITEX_INC_DIR) \
 	-I$(LITEX_INC_DIR)/base \
-	-I$(LITEX_GEN_DIR) \
-	-I$(litedram_dir) \
 	-I$(build) \
-
 
 litex-obj := $(obj)/3rdparty/litex
 
@@ -27,21 +26,28 @@ liblitex-objs += $(crt-objs)
 endif
 
 ifdef libbase-y
+CPPFLAGS_libbase = \
+	-I$(LIBBASE_GENERATED) \
+
 libbase-src   := $(LITEX_SW_DIR)/libbase
 libbase-obj   := $(litex-obj)/libbase
 liblitex-objs += $(addprefix $(libbase-obj)/,$(libbase-y))
 
-$(libbase-obj)/%.o: CPPFLAGS = $(CPPFLAGS_litex)
+$(libbase-obj)/%.o: CPPFLAGS = $(CPPFLAGS_litex) $(CPPFLAGS_libbase)
 $(libbase-obj)/%.o: $(libbase-src)/%.c
 	$(COMPILE.c) -o $@ $<
 endif
 
 ifdef liblitedram-y
-liblitedram-src  := $(LITEX_SW_DIR)/liblitedram
-liblitedram-obj  := $(litex-obj)/liblitedram
-liblitex-objs    += $(addprefix $(liblitedram-obj)/,$(liblitedram-y))
+CPPFLAGS_liblitedram = \
+	-I$(LIBLITEDRAM_GENERATED) \
+	-I$(litedram_dir) \
 
-$(liblitedram-obj)/%.o: CPPFLAGS = $(CPPFLAGS_litex)
+liblitedram-src := $(LITEX_SW_DIR)/liblitedram
+liblitedram-obj := $(litex-obj)/liblitedram
+liblitex-objs   += $(addprefix $(liblitedram-obj)/,$(liblitedram-y))
+
+$(liblitedram-obj)/%.o: CPPFLAGS = $(CPPFLAGS_litex) $(CPPFLAGS_liblitedram)
 $(liblitedram-obj)/%.o: $(liblitedram-src)/%.c
 	$(COMPILE.c) -o $@ $<
 endif

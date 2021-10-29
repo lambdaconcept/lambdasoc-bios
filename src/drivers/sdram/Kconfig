@@ -1,7 +1,13 @@
 menu "SDRAM"
 
-config WITH_SDRAM
-	bool "Enable SDRAM support"
-	default n
+if SOC_WITH_SDRAM
+
+config SDRAM_SIZE
+	int "SDRAM size (in bytes)"
+
+config SDRAM_CACHE_SIZE
+	int "SDRAM cache size (in bytes)"
+
+endif # SOC_WITH_SDRAM
 
 endmenu

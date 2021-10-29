@@ -33,11 +33,11 @@ void trap_handler(struct trap_frame *tf)
 	if (tf->mcause & 0x80000000) {
 		uint32_t irqs = irq_pending() & irq_getmask();
 
-		if (irqs & (1 << CONFIG_UART_IRQNO)) {
+		if (irqs & (1 << CONFIG_INTC_UART_IRQ)) {
 			uart_isr();
 		}
 	} else {
-		printf("Panic! at mepc=%08x (mcause=%08x)\n",
+		printf("Panic! at mepc=0x%08x (mcause=0x%08x)\n",
 		       tf->mepc, tf->mcause);
 	}
 }

@@ -1,16 +1,12 @@
-#ifndef __GENERATED_CSR_H_LAMBDASOC
-#define __GENERATED_CSR_H_LAMBDASOC
+#ifndef __LIBBASE_GENERATED_CSR_H
+#define __LIBBASE_GENERATED_CSR_H
 
 #include <litex_config.h>
-#include <generated/mem.h>
+#include <hw/common.h>
 
-#include <software/include/generated/csr.h>
-
-// LiteX's memspeed() requires timer accessors.
-
-#define TIMER_RELOAD_ADDR (LX_CONFIG_TIMER_START + 0x0)
-#define TIMER_EN_ADDR     (LX_CONFIG_TIMER_START + 0x4)
-#define TIMER_CTR_ADDR    (LX_CONFIG_TIMER_START + 0x8)
+#define TIMER_RELOAD_ADDR (LX_CONFIG_TIMER_BASE + 0x0)
+#define TIMER_EN_ADDR     (LX_CONFIG_TIMER_BASE + 0x4)
+#define TIMER_CTR_ADDR    (LX_CONFIG_TIMER_BASE + 0x8)
 
 static inline uint32_t timer0_load_read(void) {
 	return csr_read_simple(TIMER_RELOAD_ADDR);

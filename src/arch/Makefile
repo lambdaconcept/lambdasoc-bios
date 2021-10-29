@@ -1,1 +1,1 @@
-subdir-$(CONFIG_ARCH_RISCV) += riscv
+subdir-$(CONFIG_CPU_ARCH_RISCV) += riscv

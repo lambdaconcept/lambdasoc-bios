@@ -4,47 +4,67 @@ source src/arch/Kconfig
 
 source src/drivers/Kconfig
 
-menu "Memory configuration"
+menu "Memory regions"
 
-config ROM_START
-	hex "ROM start address"
+config BOOTROM_BASE
+	hex "Boot ROM base address"
 
-config ROM_SIZE
-	hex "ROM size"
+config BOOTROM_LIMIT
+	hex "Boot ROM limit address"
 
-config RAM_START
-	hex "RAM start address"
+config SCRATCHPAD_BASE
+	hex "Scratchpad base address"
 
-config RAM_SIZE
-	hex "RAM size"
+config SCRATCHPAD_LIMIT
+	hex "Scratchpad limit address"
 
-config UART_START
-	hex "UART start address"
+config UART_BASE
+	hex "UART base address"
 
-config TIMER_START
-	hex "Timer start address"
+config UART_LIMIT
+	hex "UART limit address"
 
-if WITH_SDRAM
+config TIMER_BASE
+	hex "Timer base address"
 
-config SDRAM_START
-	hex "SDRAM start address"
+config TIMER_LIMIT
+	hex "Timer limit address"
 
-config SDRAM_SIZE
-	hex "SDRAM size"
+if SOC_WITH_SDRAM
 
-endif # WITH_SDRAM
+config SDRAM_BASE
+	hex "SDRAM base address"
+
+config SDRAM_LIMIT
+	hex "SDRAM limit address"
+
+endif # SOC_WITH_SDRAM
+
+if SOC_WITH_SRAM
+
+config SRAM_BASE
+	hex "SRAM base address"
+
+config SRAM_LIMIT
+	hex "SRAM limit address"
+
+endif # SOC_WITH_SRAM
 
 endmenu
 
-menu "Interrupt configuration"
+menu "SoC"
 
-config UART_IRQNO
-	int "UART IRQ number"
-
-config TIMER_IRQNO
-	int "Timer IRQ number"
-
-endmenu
-
-config CLOCK_FREQ
+config SOC_CLOCK_FREQ
 	int "System clock frequency (in Hz)"
+
+config SOC_CSR_DATA_WIDTH
+	int "Control/Status register data width (in bits)"
+	default 32
+
+config SOC_WITH_SDRAM
+	bool "Enable SDRAM support"
+
+config SOC_WITH_SRAM
+	bool "Enable SRAM support"
+
+endmenu

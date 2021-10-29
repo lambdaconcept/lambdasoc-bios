@@ -1,0 +1,13 @@
+menu "Interrupt Controller"
+
+config INTC_TIMER_IRQ
+	int "Timer IRQ index"
+
+config INTC_UART_IRQ
+	int "UART IRQ index"
+
+config INTC_ETHMAC_IRQ
+	int "Ethernet MAC IRQ index"
+	depends on SOC_WITH_ETHMAC
+
+endmenu

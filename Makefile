@@ -30,6 +30,7 @@ all: $(KCONFIG_AUTOHEADER) $(obj)/bios.bin
 include $(kconfig-src)/build.mk
 
 $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG)
+	+$(MAKE) olddefconfig
 	+$(MAKE) oldconfig
 
 $(KCONFIG_AUTOCONFIG): $(KCONFIG_AUTOHEADER)

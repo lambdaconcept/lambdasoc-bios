@@ -1,0 +1,9 @@
+menu "Static RAM"
+
+config BOOTROM_SIZE
+	int "Boot ROM size (bytes)"
+
+config SCRATCHPAD_SIZE
+	int "Scratchpad size (bytes)"
+
+endmenu

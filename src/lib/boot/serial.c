@@ -26,7 +26,7 @@ static int check_ack(void)
 {
 	int recognized;
 	static const char str[SFL_MAGIC_LEN] = SFL_MAGIC_ACK;
-        uint32_t period = CONFIG_CLOCK_FREQ / 4;
+        uint32_t period = CONFIG_SOC_CLOCK_FREQ / 4;
 
 	timer_enable(0);
 	timer_reload(0);

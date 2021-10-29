@@ -10,8 +10,8 @@
 
 #include <boot/common.h>
 
-#if CONFIG_WITH_SDRAM
-# include <sdram.h>
+#if CONFIG_SOC_WITH_SDRAM
+# include <litex/sdram.h>
 #endif
 
 /* General address space functions */
@@ -300,7 +300,7 @@ int main(void)
 	     "Built "__DATE__" "__TIME__"\n");
 	crcbios();
 
-#if CONFIG_WITH_SDRAM
+#if CONFIG_SOC_WITH_SDRAM
 	if (!sdram_init()) {
 		printf("Memory initialization failed\n");
 	}

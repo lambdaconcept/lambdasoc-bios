@@ -1,0 +1,9 @@
+#ifndef __LITEDRAM_GENERATED_MEM_H
+#define __LITEDRAM_GENERATED_MEM_H
+
+#include <litex_config.h>
+
+#define MAIN_RAM_BASE LX_CONFIG_MAIN_RAM_BASE
+#define MAIN_RAM_SIZE LX_CONFIG_MAIN_RAM_SIZE
+
+#endif

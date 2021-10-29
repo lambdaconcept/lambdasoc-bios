@@ -20,7 +20,7 @@ struct uart_regs {
 
 static inline void *uart_baseptr(void)
 {
-	uintptr_t uart_base = CONFIG_UART_START;
+	uintptr_t uart_base = CONFIG_UART_BASE;
 	return (void *)uart_base;
 }
 
@@ -119,7 +119,7 @@ void uart_write(char c)
 	}
 
 	oldmask = irq_getmask();
-	irq_setmask(oldmask & ~(1 << CONFIG_UART_IRQNO));
+	irq_setmask(oldmask & ~(1 << CONFIG_INTC_UART_IRQ));
 	if ((tx_consume != tx_produce) || !read32(&regs->tx_rdy)) {
 		tx_buf[tx_produce] = c;
 		tx_produce = tx_produce_next;
@@ -142,7 +142,7 @@ void uart_init(void)
 	pending = read32(&regs->ev_pending);
 	write32(&regs->ev_pending, pending);
 	write32(&regs->ev_enable, EV_RX_RDY|EV_TX_MTY);
-	irq_setmask(irq_getmask() | (1 << CONFIG_UART_IRQNO));
+	irq_setmask(irq_getmask() | (1 << CONFIG_INTC_UART_IRQ));
 }
 
 void uart_sync(void)

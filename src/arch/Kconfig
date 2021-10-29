@@ -1,3 +1,5 @@
+source src/arch/riscv/Kconfig
+
 menu "CPU"
 
 choice
@@ -6,17 +8,19 @@ choice
 
 config CPU_MINERVA
 	bool "Minerva"
-	select ARCH_RISCV
+	select CPU_ARCH_RISCV
 
 endchoice
 
-config CPU_BYTEORDER
-	string
-	default "little" if CPU_MINERVA
+config CPU_BYTEORDER_LITTLE
+	bool
+	default "y" if CPU_MINERVA
 
 config CPU_RESET_ADDR
 	hex "Reset vector address"
 
-source src/arch/riscv/Kconfig
+config CPU_DATA_WIDTH
+	int
+	default 32 if CPU_MINERVA
 
 endmenu
